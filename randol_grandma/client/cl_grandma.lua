@@ -66,6 +66,10 @@ AddEventHandler('onResourceStart', function(resourceName)
     end
 end)
 
+AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
+    SpawnGrandma()
+end)
+
 ------------------
 -- CHECK FUNDS --
 ------------------
@@ -121,4 +125,8 @@ AddEventHandler('onResourceStop', function(resourceName)
 	if GetCurrentResourceName() == resourceName then
         DeleteGrandma()
 	end 
+end)
+
+AddEventHandler('QBCore:Client:OnPlayerUnload', function()
+    DeleteGrandma()
 end)
