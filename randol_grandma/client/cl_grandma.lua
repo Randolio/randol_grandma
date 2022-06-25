@@ -16,7 +16,7 @@ function IsDowned()
         if PlayerData.metadata["inlaststand"] or PlayerData.metadata["isdead"] then
             isDowned = true
         else
-            isDowned = true
+            isDowned = false
         end
     end)
 
