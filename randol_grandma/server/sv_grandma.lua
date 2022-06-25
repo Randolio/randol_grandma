@@ -1,6 +1,6 @@
 local QBCore = exports['qb-core']:GetCoreObject()
-local moneytype = 'crypto' -- 'cash' 'bank' or 'crypto'
-local payment = 50 -- Payment amount
+local moneytype = 'bank' -- 'cash' 'bank' or 'crypto'
+local payment = 1500 -- Payment amount
 local CheckBalance = true -- If true, it will check money balance
 
 
