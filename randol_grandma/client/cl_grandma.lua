@@ -7,21 +7,6 @@ grandma = {}
 -- ANIMATIONS / GRANDMA / TARGET --
 ------------------------------------
 
-function IsDowned()
-
-    local ped = PlayerPedId()
-    local player = PlayerId()
-
-    QBCore.Functions.GetPlayerData(function(PlayerData)
-        if PlayerData.metadata["inlaststand"] or PlayerData.metadata["isdead"] then
-            isDowned = true
-        else
-            isDowned = false
-        end
-    end)
-
-end
-
 function loadAnimDict(dict)
     while not HasAnimDictLoaded(dict) do
         RequestAnimDict(dict)
