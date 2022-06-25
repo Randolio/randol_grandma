@@ -1,6 +1,7 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local moneytype = 'crypto' -- 'cash' 'bank' or 'crypto'
 local payment = 50 -- Payment amount
+local CheckBalance = true -- If true, it will check money balance
 
 
 RegisterServerEvent('randol_grandma:server:checkfunds', function()
@@ -8,18 +9,21 @@ RegisterServerEvent('randol_grandma:server:checkfunds', function()
     local Player = QBCore.Functions.GetPlayer(src)
     local balance = Player.Functions.GetMoney(moneytype)
 
-    if balance >= payment then -- Checks to make sure player has enough funds
-        TriggerClientEvent('randol_grandma:reviveplayer', source) -- Starts Progressbar for Reviving
-    else
-        if moneytype == 'crypto' then
-            TriggerClientEvent('QBCore:Notify', source, "You don't have enough crypto to pay Grandma!", "error")
-        elseif moneytype == 'bank' then
-            TriggerClientEvent('QBCore:Notify', source, "You don't have enough money in your bank to pay Grandma!", "error")
-        elseif moneytype == 'cash' then
-            TriggerClientEvent('QBCore:Notify', source, "You don't have enough cash to pay Grandma!", "error")
+    if CheckBalance then -- Checks for money balance
+        if balance >= payment then -- Checks to make sure player has enough funds
+            TriggerClientEvent('randol_grandma:reviveplayer', source) -- Starts Progressbar for Reviving
+        else
+            if moneytype == 'crypto' then
+                TriggerClientEvent('QBCore:Notify', source, "You don't have enough crypto to pay Grandma!", "error")
+            elseif moneytype == 'bank' then
+                TriggerClientEvent('QBCore:Notify', source, "You don't have enough money in your bank to pay Grandma!", "error")
+            elseif moneytype == 'cash' then
+                TriggerClientEvent('QBCore:Notify', source, "You don't have enough cash to pay Grandma!", "error")
+            end
         end
+    else -- Does not check for money balance
+        TriggerClientEvent('randol_grandma:reviveplayer', source)
     end
-
 end)
 
 -- Charges Player
