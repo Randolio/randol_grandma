@@ -11,7 +11,13 @@ RegisterServerEvent('randol_grandma:server:checkfunds', function()
     if balance >= payment then -- Checks to make sure player has enough funds
         TriggerClientEvent('randol_grandma:reviveplayer', source) -- Starts Progressbar for Reviving
     else
-        TriggerClientEvent('QBCore:Notify', source, "You don't have enough crypto to pay Grandma!", "error")
+        if moneytype == 'crypto' then
+            TriggerClientEvent('QBCore:Notify', source, "You don't have enough crypto to pay Grandma!", "error")
+        elseif moneytype == 'bank' then
+            TriggerClientEvent('QBCore:Notify', source, "You don't have enough money in your bank to pay Grandma!", "error")
+        elseif moneytype == 'cash' then
+            TriggerClientEvent('QBCore:Notify', source, "You don't have enough cash to pay Grandma!", "error")
+        end
     end
 
 end)
