@@ -1,7 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 
-description 'Randolio Grandma script.'
+description 'Original Author: Randolio || Reworked By: Thrasherrr'
 version '1'
 lua54 'yes'
 
