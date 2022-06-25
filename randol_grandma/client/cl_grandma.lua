@@ -1,5 +1,5 @@
 local QBCore = exports['qb-core']:GetCoreObject()
-local isDowned = false
+local CheckDead = true -- 'true' checks if player is downed or dead, otherwise it will just heal them
 
 grandma = {}
 
@@ -74,13 +74,17 @@ RegisterNetEvent('randol_grandma:client:checks', function()
     local ped = PlayerPedId()
     local player = PlayerId()
 
-    QBCore.Functions.GetPlayerData(function(PlayerData)
-        if PlayerData.metadata["inlaststand"] or PlayerData.metadata["isdead"] then
-            TriggerServerEvent('randol_grandma:server:checkfunds')
-        else
-            QBCore.Functions.Notify("You are not downed or dead.", "error")
-        end
-    end)
+    if CheckDead then -- Checks if true or false. If true, checks if player is downed or dead
+        QBCore.Functions.GetPlayerData(function(PlayerData)
+            if PlayerData.metadata["inlaststand"] or PlayerData.metadata["isdead"] then
+                TriggerServerEvent('randol_grandma:server:checkfunds')
+            else
+                QBCore.Functions.Notify("You are not downed or dead.", "error")
+            end
+        end)
+    else -- Not checking if player is downed or dead
+        TriggerServerEvent('randol_grandma:server:checkfunds')
+    end
 end)
 
 ----------------------------
