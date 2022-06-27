@@ -1,5 +1,4 @@
 local QBCore = exports['qb-core']:GetCoreObject()
-local CheckDead = true -- 'true' checks if player is downed or dead, otherwise it will just heal them
 
 grandma = {}
 
@@ -27,7 +26,7 @@ function SpawnGrandma()
         Wait(0)
     end
     
-    grandma = CreatePed(0, GetHashKey('ig_mrs_thornhill') , 2435.63, 4965.12, 45.81, 8.76, false, false)
+    grandma = CreatePed(0, GetHashKey('ig_mrs_thornhill') , Config.Coords.x,  Config.Coords.y,  Config.Coords.z,  Config.Coords.w, false, false)
     --vector4(2435.63, 4965.12, 46.81, 8.76)
 
     SetEntityAsMissionEntity(grandma)
@@ -37,7 +36,7 @@ function SpawnGrandma()
     FreezeEntityPosition(grandma, true)
     GrandmaSit()  
 
-    exports['qb-target']:AddTargetModel('ig_mrs_thornhill', {
+    exports['qb-target']:AddTargetEntity(grandma, {
         options = {
             { 
                 type = "client",
@@ -55,7 +54,6 @@ function DeleteGrandma()
         DeletePed(grandma)
     end
 end
-
 ----------------------
 -- RESOURCE START --
 ----------------------
@@ -78,7 +76,7 @@ RegisterNetEvent('randol_grandma:client:checks', function()
     local ped = PlayerPedId()
     local player = PlayerId()
 
-    if CheckDead then -- Checks if true or false. If true, checks if player is downed or dead
+    if Config.CheckDead then -- Checks if true or false. If true, checks if player is downed or dead
         QBCore.Functions.GetPlayerData(function(PlayerData)
             if PlayerData.metadata["inlaststand"] or PlayerData.metadata["isdead"] then
                 TriggerServerEvent('randol_grandma:server:checkfunds')
@@ -96,7 +94,7 @@ end)
 ----------------------------
 
 RegisterNetEvent('randol_grandma:reviveplayer', function(source)
-    SetEntityCoords(PlayerPedId(), vector4(2435.36, 4965.54, 45.81, 282.65)) -- Move player closer to grandma --CHANGE THIS IF YOU CHANGE LINE 23 COORDINATES.
+    SetEntityCoords(PlayerPedId(), Config.Coords)
     TaskStartScenarioInPlace(grandma, "CODE_HUMAN_MEDIC_TEND_TO_DEAD", 0, true)
     QBCore.Functions.Progressbar("grandma", "Grandma is healing your wounds..", 10000, false, true, {
         disableMovement = true,
@@ -104,12 +102,20 @@ RegisterNetEvent('randol_grandma:reviveplayer', function(source)
         disableMouse = false,
         disableCombat = true,
      }, {}, {}, {}, function()
-        QBCore.Functions.Notify("You feel much better now.", "success")
-        TriggerEvent('hospital:client:Revive')
-        TriggerServerEvent('randol_grandma:server:grandmafee') -- Removes Funds
-        ClearPedTasks(PlayerPedId())
-        ClearPedTasksImmediately(grandma)
-        GrandmaSit()
+        QBCore.Functions.TriggerCallback('random_grandma:attemptGrandmaPayment', function(hasPaid)
+            if hasPaid then
+                QBCore.Functions.Notify("You feel much better now.", "success")
+                TriggerEvent('hospital:client:Revive')
+                ClearPedTasks(PlayerPedId())
+                ClearPedTasksImmediately(grandma)
+                GrandmaSit()
+            else
+                QBCore.Functions.Notify("You're cooked.", "error") -- Got rid of the money after initial check IE attempted to exploit
+                ClearPedTasks(PlayerPedId())
+                ClearPedTasksImmediately(grandma)
+                GrandmaSit()
+            end
+        end)
      end, function() -- Cancel
         ClearPedTasks(PlayerPedId())
         ClearPedTasksImmediately(grandma)
