@@ -94,7 +94,7 @@ end)
 ----------------------------
 
 RegisterNetEvent('randol_grandma:reviveplayer', function(source)
-    SetEntityCoords(PlayerPedId(), Config.Coords)
+    SetEntityCoords(PlayerPedId(), Config.Coords.x, Config.Coords.y, Config.Coords.z)
     TaskStartScenarioInPlace(grandma, "CODE_HUMAN_MEDIC_TEND_TO_DEAD", 0, true)
     QBCore.Functions.Progressbar("grandma", "Grandma is healing your wounds..", 10000, false, true, {
         disableMovement = true,
