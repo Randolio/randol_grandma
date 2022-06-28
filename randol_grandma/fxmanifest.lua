@@ -1,7 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 
-description 'Original Author: Randolio || Reworked By: Thrasherrr'
+description 'Original Author: Randolio || Contributions from: Thrasherrr & Jaycc.
 version '1'
 lua54 'yes'
 
