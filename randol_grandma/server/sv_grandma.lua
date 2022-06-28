@@ -26,14 +26,14 @@ end)
 -- Charges Player
 QBCore.Functions.CreateCallback('random_grandma:attemptGrandmaPayment', function(source, cb)
     local src = source
-      local Player = QBCore.Functions.GetPlayer(src)
-      if Config.CheckBalance then
+    local Player = QBCore.Functions.GetPlayer(src)
+    if Config.CheckBalance then
         if Player.Functions.RemoveMoney(Config.MoneyType, Config.Cost) then -- Removes money type and amount
             cb(true)
         else
             cb(false)
         end
     else
-        cb(false)
+        cb(true)
     end
   end)
