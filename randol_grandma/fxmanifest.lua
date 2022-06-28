@@ -5,8 +5,12 @@ description 'Original Author: Randolio || Reworked By: Thrasherrr'
 version '1'
 lua54 'yes'
 
-server_script 'server/sv_grandma.lua'
-
-client_script 'client/cl_grandma.lua'
-
-
+shared_scripts {
+    'config.lua',
+}
+client_scripts {
+    'client/*.lua'
+}
+server_scripts {
+    'server/*.lua'
+}
