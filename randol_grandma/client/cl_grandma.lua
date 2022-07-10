@@ -132,7 +132,3 @@ AddEventHandler('onResourceStop', function(resourceName)
         DeleteGrandma()
 	end 
 end)
-
-AddEventHandler('QBCore:Client:OnPlayerUnload', function()
-    DeleteGrandma()
-end)
