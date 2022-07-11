@@ -64,6 +64,7 @@ AddEventHandler('onResourceStart', function(resourceName)
     end
 end)
 
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
     SpawnGrandma()
 end)
@@ -131,4 +132,9 @@ AddEventHandler('onResourceStop', function(resourceName)
 	if GetCurrentResourceName() == resourceName then
         DeleteGrandma()
 	end 
+end)
+
+RegisterNetEvent('QBCore:Client:OnPlayerUnload')
+AddEventHandler('QBCore:Client:OnPlayerUnload', function()
+    DeleteGrandma()
 end)
