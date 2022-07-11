@@ -27,7 +27,6 @@ function SpawnGrandma()
     end
     
     grandma = CreatePed(0, GetHashKey('ig_mrs_thornhill') , Config.Coords.x,  Config.Coords.y,  Config.Coords.z,  Config.Coords.w, false, false)
-    --vector4(2435.63, 4965.12, 46.81, 8.76)
 
     SetEntityAsMissionEntity(grandma)
     SetPedFleeAttributes(grandma, 0, 0)
