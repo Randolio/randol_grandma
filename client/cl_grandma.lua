@@ -21,12 +21,12 @@ end
 
 function SpawnGrandma()
 
-    RequestModel(GetHashKey('ig_mrs_thornhill'))
-    while not HasModelLoaded(GetHashKey('ig_mrs_thornhill')) do
+    RequestModel(`ig_mrs_thornhill`)
+    while not HasModelLoaded(`ig_mrs_thornhill`) do
         Wait(0)
     end
     
-    grandma = CreatePed(0, GetHashKey('ig_mrs_thornhill') , Config.Coords.x,  Config.Coords.y,  Config.Coords.z,  Config.Coords.w, false, false)
+    grandma = CreatePed(0, `ig_mrs_thornhill` , Config.Coords.x,  Config.Coords.y,  Config.Coords.z,  Config.Coords.w, false, false)
 
     SetEntityAsMissionEntity(grandma)
     SetPedFleeAttributes(grandma, 0, 0)
