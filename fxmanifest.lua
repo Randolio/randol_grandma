@@ -1,16 +1,12 @@
 fx_version 'cerulean'
 game 'gta5'
 
-description 'Original Author: Randolio || Contributions from: Thrasherrr & Jaycc.'
-version '1'
+author 'Randolio'
+description 'Grandma revive script.'
 lua54 'yes'
 
-shared_scripts {
-    'config.lua',
-}
-client_scripts {
-    'client/*.lua'
-}
-server_scripts {
-    'server/*.lua'
-}
+shared_scripts {'shared.lua', '@ox_lib/init.lua'}
+
+client_scripts {'cl_grandma.lua'}
+
+server_scripts {'sv_grandma.lua'}
