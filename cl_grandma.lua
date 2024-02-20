@@ -1,19 +1,21 @@
-local GRANDMA_PED
+local GRANDMA_PED = {}
 Config = {}
 
-local function resetGrandma()
-    if DoesEntityExist(GRANDMA_PED) then
-        ClearPedTasksImmediately(GRANDMA_PED)
+local function resetGrandma(k)
+    if DoesEntityExist(GRANDMA_PED[k]) then
+        ClearPedTasksImmediately(GRANDMA_PED[k])
         lib.requestAnimDict("timetable@reunited@ig_10", 2000)        
-        TaskPlayAnim(GRANDMA_PED, "timetable@reunited@ig_10", "base_amanda", 8.0, 1.0, -1, 01, 0, 0, 0, 0)
+        TaskPlayAnim(GRANDMA_PED[k], "timetable@reunited@ig_10", "base_amanda", 8.0, 1.0, -1, 01, 0, 0, 0, 0)
     end
 end
 
 function deleteGrandma()
-    if DoesEntityExist(GRANDMA_PED) then
-        DeletePed(GRANDMA_PED)
-        GRANDMA_PED = nil
+    for k,v in pairs(GRANDMA_PED) do
+        if DoesEntityExist(GRANDMA_PED[k]) then
+            DeleteEntity(GRANDMA_PED[k])
+        end
     end
+    table.wipe(GRANDMA_PED)
     table.wipe(PlayerData)
     table.wipe(Config)
 end
@@ -21,34 +23,37 @@ end
 local function spawnGrandma()
     local model = joaat(Config.model)
     lib.requestModel(model, 5000)
-    GRANDMA_PED = CreatePed(0, model, Config.coords.x, Config.coords.y, Config.coords.z, Config.coords.w, false, false)
+    
+    for k, v in pairs(Config.locations) do
+        GRANDMA_PED[k] = CreatePed(0, model, v.x, v.y, v.z - 1.0, v.w, false, false)
 
-    SetEntityAsMissionEntity(GRANDMA_PED, true, true)
-    SetPedFleeAttributes(GRANDMA_PED, 0, 0)
-    SetBlockingOfNonTemporaryEvents(GRANDMA_PED, true)
-    SetEntityInvincible(GRANDMA_PED, true)
-    FreezeEntityPosition(GRANDMA_PED, true)
-    lib.requestAnimDict("timetable@reunited@ig_10", 2000)        
-    TaskPlayAnim(GRANDMA_PED, "timetable@reunited@ig_10", "base_amanda", 8.0, 1.0, -1, 01, 0, 0, 0, 0)
+        SetEntityAsMissionEntity(GRANDMA_PED[k], true, true)
+        SetPedFleeAttributes(GRANDMA_PED[k], 0, 0)
+        SetBlockingOfNonTemporaryEvents(GRANDMA_PED[k], true)
+        SetEntityInvincible(GRANDMA_PED[k], true)
+        FreezeEntityPosition(GRANDMA_PED[k], true)
+        lib.requestAnimDict("timetable@reunited@ig_10", 2000)        
+        TaskPlayAnim(GRANDMA_PED[k], "timetable@reunited@ig_10", "base_amanda", 8.0, 1.0, -1, 01, 0, 0, 0, 0)
 
-    exports['qb-target']:AddTargetEntity(GRANDMA_PED, { -- Use qb-target because ox-target has compatability for it.(Works for ESX too if you use ox-target)
-        options = {
-            { 
-                icon = "fa-solid fa-house-medical",
-                label = "Get Treated",
-                action = function()
-                    local success = lib.callback.await('randol_grandma:server:useGrandma', false)
-                    if success then
-                        DoNotification("You are being helped.", "success")
-                    end
-                end,
-                canInteract = function()
-                    return not GlobalState.GRANDMA_BUSY and isPlyDead()
-                end,
+        exports['qb-target']:AddTargetEntity(GRANDMA_PED[k], { -- Use qb-target because ox-target has compatability for it.(Works for ESX too if you use ox-target)
+            options = {
+                { 
+                    icon = "fa-solid fa-house-medical",
+                    label = "Get Treated",
+                    action = function()
+                        local success = lib.callback.await('randol_grandma:server:useGrandma', false, k)
+                        if success then
+                            DoNotification("You are being helped.", "success")
+                        end
+                    end,
+                    canInteract = function()
+                        return not GlobalState.GRANDMA_BUSY and isPlyDead()
+                    end,
+                },
             },
-        },
-        distance = 2.5 
-    })
+            distance = 2.5 
+        })
+    end
 end
 
 RegisterNetEvent('randol_grandma:client:cacheConfig', function(data)
@@ -57,10 +62,10 @@ RegisterNetEvent('randol_grandma:client:cacheConfig', function(data)
     spawnGrandma()
 end)
 
-RegisterNetEvent('randol_grandma:client:attemptRevive', function()
+RegisterNetEvent('randol_grandma:client:attemptRevive', function(k)
     if GetInvokingResource() then return end
-    lib.callback.await('randol_grandma:server:syncAnim', false)
-    local coords = GetOffsetFromEntityInWorldCoords(GRANDMA_PED, 0.0, 0.5, 0.0)
+    lib.callback.await('randol_grandma:server:syncAnim', false, k)
+    local coords = GetOffsetFromEntityInWorldCoords(GRANDMA_PED[k], 0.0, 0.5, 0.0)
     SetEntityCoords(cache.ped, coords.x, coords.y, coords.z-1.0)
     if lib.progressCircle({
         duration = Config.duration,
@@ -77,18 +82,18 @@ RegisterNetEvent('randol_grandma:client:attemptRevive', function()
     end
 end)
 
-RegisterNetEvent('randol_grandma:client:syncAnim', function()
+RegisterNetEvent('randol_grandma:client:syncAnim', function(k)
     if GetInvokingResource() then return end
 
-    TaskStartScenarioInPlace(GRANDMA_PED, "CODE_HUMAN_MEDIC_TEND_TO_DEAD", 0, true)
+    TaskStartScenarioInPlace(GRANDMA_PED[k], "CODE_HUMAN_MEDIC_TEND_TO_DEAD", 0, true)
 
     SetTimeout(Config.duration, function()
-        resetGrandma()
+        resetGrandma(k)
     end)
 end)
 
 AddEventHandler('onResourceStop', function(resourceName)
     if GetCurrentResourceName() == resourceName then
-	deleteGrandma()
+	    deleteGrandma()
     end
 end)

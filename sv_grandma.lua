@@ -1,18 +1,21 @@
 Server = {
     model = 'ig_mrs_thornhill',
     checkDead = true,
-    coords = vec4(2432.59, 4966.1, 45.81, 51.92),
+    locations = { -- Multi location support.
+        [1] = vec4(2432.59, 4966.1, 46.81, 51.92),
+        [2] = vec4(1974.38, 3820.33, 33.43, 215.01),
+    },
     cost = 500,
     moneyType = 'bank', -- cash/bank
     duration = 10000,
 }
 
-lib.callback.register('randol_grandma:server:useGrandma', function(source)
+lib.callback.register('randol_grandma:server:useGrandma', function(source, index)
     local src = source
     local ped = GetPlayerPed(src)
     local coords = GetEntityCoords(ped)
 
-    if #(coords - Server.coords.xyz) > 10 then
+    if #(coords - Server.locations[index].xyz) > 10 then
         return false
     end
 
@@ -31,7 +34,7 @@ lib.callback.register('randol_grandma:server:useGrandma', function(source)
     end
 
     GlobalState.GRANDMA_BUSY = true
-    TriggerClientEvent('randol_grandma:client:attemptRevive', src)
+    TriggerClientEvent('randol_grandma:client:attemptRevive', src, index)
     return true
 end)
 
@@ -44,13 +47,13 @@ lib.callback.register('randol_grandma:server:resetBusy', function(source)
     return false
 end)
 
-lib.callback.register('randol_grandma:server:syncAnim', function(source)
-    local coords = vec3(Server.coords.x, Server.coords.y, Server.coords.z)
+lib.callback.register('randol_grandma:server:syncAnim', function(source, index)
+    local coords = Server.locations[index].xyz
     local plys = lib.getNearbyPlayers(coords, 50.0)
     if plys then
         for i = 1, #plys do
             local player = plys[i]
-            TriggerClientEvent('randol_grandma:client:syncAnim', player.id)
+            TriggerClientEvent('randol_grandma:client:syncAnim', player.id, index)
         end
         return true
     end

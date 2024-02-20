@@ -21,7 +21,7 @@ end
 function RemovePlayerMoney(Player, amount, moneyType)
     local balance = Player.Functions.GetMoney(moneyType)
     if balance >= amount then
-        Player.Functions.RemoveMoney(moneyType, amount)
+        Player.Functions.RemoveMoney(moneyType, amount, "grandma-fee")
         return true
     end
     return false
