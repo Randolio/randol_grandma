@@ -1,5 +1,4 @@
 Server = {
-    model = 'ig_mrs_thornhill',
     checkDead = true,
     locations = { -- Multi location support.
         [1] = {coords = vec4(2432.59, 4966.1, 46.81, 51.92), model = 'ig_mrs_thornhill', name = 'Grandma', busy = false},
