@@ -7,7 +7,7 @@ Server = {
     duration = 10000,
 }
 
-lib.callback.register('random_grandma:server:useGrandma', function(source)
+lib.callback.register('randol_grandma:server:useGrandma', function(source)
     local src = source
     local ped = GetPlayerPed(src)
     local coords = GetEntityCoords(ped)
@@ -35,7 +35,7 @@ lib.callback.register('random_grandma:server:useGrandma', function(source)
     return true
 end)
 
-lib.callback.register('random_grandma:server:resetBusy', function(source)
+lib.callback.register('randol_grandma:server:resetBusy', function(source)
     if GlobalState.GRANDMA_BUSY then
         GlobalState.GRANDMA_BUSY = false
         TriggerEvent('randol_grandma:server:handleRevive', source)
