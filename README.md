@@ -4,7 +4,7 @@
 
 A way for players to get revived in your server without the need of a hospital (crim based). 
 
-**NOTE**: Support for qbox is unlikely, I'm not sure how they handle ambulance stuff now.
+**NOTE**: The config is now in the sv_grandma.lua at the very top. Make your changes there.
 
 ## Requirements
 
