@@ -19,17 +19,13 @@ function GetCharacterName(xPlayer)
 end
 
 function RemovePlayerMoney(xPlayer, amount, moneyType)
-    if moneyType == 'cash' then
-        if xPlayer.getMoney() >= amount then
-            xPlayer.removeMoney(amount, "grandma-fee")
-            return true
-        end
-    elseif moneyType == 'bank' then
-        if xPlayer.getAccount('bank').money >= amount then
-            xPlayer.removeAccountMoney('bank', amount, "grandma-fee")
-            return true
-        end
+    local account = (moneyType == 'cash' and 'money') or moneyType
+
+    if xPlayer.getAccount(account).money >= amount then
+        xPlayer.removeAccountMoney(account, amount, "grandma-fee")
+        return true
     end
+
     return false
 end
 
