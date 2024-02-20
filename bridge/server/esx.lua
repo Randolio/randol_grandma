@@ -37,6 +37,6 @@ AddEventHandler('esx:playerLoaded', function(source)
     PlayerHasLoaded(source)
 end)
 
-AddEventHandler('random_grandma:server:handleRevive', function(src)
+AddEventHandler('randol_grandma:server:handleRevive', function(src)
     TriggerClientEvent('esx_ambulancejob:revive', src)
 end)
