@@ -32,7 +32,7 @@ RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
 end)
 
 AddEventHandler('randol_grandma:server:handleRevive', function(src)
-    if GetResourceState('qbx_core') == 'started' then -- A quick way to check if it's qbox or qb.
+    if GetResourceState('qbx_medical') == 'started' then -- A quick way to check if it's qbox or qb.
         TriggerClientEvent('qbx_medical:client:playerRevived', src)
     else
         TriggerClientEvent('hospital:client:Revive', src)
