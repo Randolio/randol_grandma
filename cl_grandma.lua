@@ -37,7 +37,7 @@ local function spawnGrandma()
                 icon = "fa-solid fa-house-medical",
                 label = "Get Treated",
                 action = function()
-                    local success = lib.callback.await('random_grandma:server:useGrandma', false)
+                    local success = lib.callback.await('randol_grandma:server:useGrandma', false)
                     if success then
                         DoNotification("You are being helped.", "success")
                     end
@@ -70,7 +70,7 @@ RegisterNetEvent('randol_grandma:client:attemptRevive', function()
         canCancel = false,
         disable = { move = true, car = true, mouse = false, combat = true, },
     }) then
-        local success = lib.callback.await('random_grandma:server:resetBusy', false)
+        local success = lib.callback.await('randol_grandma:server:resetBusy', false)
         if success then
             DoNotification("You were patched up by Grandma.", "success")
         end
