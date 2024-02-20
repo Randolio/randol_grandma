@@ -94,6 +94,6 @@ end)
 
 AddEventHandler('onResourceStop', function(resourceName)
     if GetCurrentResourceName() == resourceName then
-	    deleteGrandma()
+	deleteGrandma()
     end
 end)
