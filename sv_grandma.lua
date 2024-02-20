@@ -38,7 +38,7 @@ end)
 lib.callback.register('random_grandma:server:resetBusy', function(source)
     if GlobalState.GRANDMA_BUSY then
         GlobalState.GRANDMA_BUSY = false
-        TriggerEvent('random_grandma:server:handleRevive', source)
+        TriggerEvent('randol_grandma:server:handleRevive', source)
         return true
     end
     return false
