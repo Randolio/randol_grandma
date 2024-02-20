@@ -27,7 +27,7 @@ function hasPlyLoaded()
 end
 
 function isPlyDead()
-    return (not Config.checkDead and true) or PlayerData.metadata.isdead
+    return (not Config.checkDead and true) or PlayerData.metadata.inlaststand or PlayerData.metadata.isdead
 end
 
 function DoNotification(text, nType)
