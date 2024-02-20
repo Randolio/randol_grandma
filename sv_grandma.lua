@@ -1,10 +1,9 @@
-local grandma = {
+Server = {
     model = 'ig_mrs_thornhill',
-    checkBalance = true,
     checkDead = true,
     coords = vec4(2432.59, 4966.1, 45.81, 51.92),
     cost = 500,
-    moneyType = 'cash',
+    moneyType = 'bank', -- cash/bank
     duration = 10000,
 }
 
@@ -13,26 +12,24 @@ lib.callback.register('random_grandma:server:useGrandma', function(source)
     local ped = GetPlayerPed(src)
     local coords = GetEntityCoords(ped)
 
-    if #(coords - grandma.coords.xyz) > 10 then
+    if #(coords - Server.coords.xyz) > 10 then
         return false
     end
 
     if GlobalState.GRANDMA_BUSY then
-        TriggerClientEvent('QBCore:Notify', src, "Grandma is busy right now.", "error")
+        DoNotification(src, "Grandma is busy right now.", "error")
         return false
     end
 
-    local Player = QBCore.Functions.GetPlayer(src)
-    local balance = Player.Functions.GetMoney(grandma.moneyType)
+    local Player = GetPlayer(src)
+    local hasPaid = RemovePlayerMoney(Player, Server.cost, Server.moneyType)
 
-    if grandma.checkBalance then
-        if balance < grandma.cost then
-            TriggerClientEvent('QBCore:Notify', src, ("You don't have enough %s to pay Grandma. ($%s)"):format(grandma.moneyType, grandma.cost), "error")
-            return false
-        end
+
+    if not hasPaid then
+        DoNotification(src, ("You don't have enough %s to pay Server. ($%s)"):format(Server.moneyType, Server.cost), "error")
+        return false
     end
 
-    Player.Functions.RemoveMoney(grandma.moneyType, grandma.cost, 'used-grandma')
     GlobalState.GRANDMA_BUSY = true
     TriggerClientEvent('randol_grandma:client:attemptRevive', src)
     return true
@@ -41,14 +38,14 @@ end)
 lib.callback.register('random_grandma:server:resetBusy', function(source)
     if GlobalState.GRANDMA_BUSY then
         GlobalState.GRANDMA_BUSY = false
-        TriggerClientEvent('hospital:client:Revive', source)
+        TriggerEvent('random_grandma:server:handleRevive', source)
         return true
     end
     return false
 end)
 
 lib.callback.register('randol_grandma:server:syncAnim', function(source)
-    local coords = vec3(grandma.coords.x, grandma.coords.y, grandma.coords.z)
+    local coords = vec3(Server.coords.x, Server.coords.y, Server.coords.z)
     local plys = lib.getNearbyPlayers(coords, 50.0)
     if plys then
         for i = 1, #plys do
@@ -64,13 +61,13 @@ AddEventHandler('onResourceStart', function(resourceName)
     if GetCurrentResourceName() ~= resourceName then return end
     SetTimeout(2000, function()
         GlobalState.GRANDMA_BUSY = false
-        TriggerClientEvent('randol_grandma:client:cacheConfig', -1, grandma)
+        TriggerClientEvent('randol_grandma:client:cacheConfig', -1, Server)
     end)
 end)
 
-RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
+function PlayerHasLoaded(source)
     local src = source
     SetTimeout(2000, function()
-        TriggerClientEvent('randol_grandma:client:cacheConfig', src, grandma)
+        TriggerClientEvent('randol_grandma:client:cacheConfig', src, Server)
     end)
-end)
+end
