@@ -87,8 +87,8 @@ RegisterNetEvent('randol_grandma:client:syncAnim', function()
     end)
 end)
 
-AddEventHandler('onResourceStop', function(resourceName) 
-	if GetCurrentResourceName() == resourceName then
-        deleteGrandma()
-	end 
+AddEventHandler('onResourceStop', function(resourceName)
+    if GetCurrentResourceName() == resourceName then
+	deleteGrandma()
+    end
 end)
