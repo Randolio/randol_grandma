@@ -2,25 +2,35 @@ Server = {
     model = 'ig_mrs_thornhill',
     checkDead = true,
     locations = { -- Multi location support.
-        [1] = vec4(2432.59, 4966.1, 46.81, 51.92),
-        [2] = vec4(1974.38, 3820.33, 33.43, 215.01),
+        [1] = {coords = vec4(2432.59, 4966.1, 46.81, 51.92), model = 'ig_mrs_thornhill', name = 'Grandma', busy = false},
+        [2] = {coords = vec4(1974.38, 3820.33, 33.43, 215.01), model = 'cs_nigel', name = 'Grandpa', busy = false},
     },
     cost = 500,
     moneyType = 'bank', -- cash/bank
     duration = 10000,
 }
 
+local function resetBusy(index)
+    Server.locations[index].busy = true
+    CreateThread(function()
+        Wait(Server.duration + 2000) -- This is to account for people who may crash/quit during the progress bar. Gotta make sure that grandparent resets.
+        Server.locations[index].busy = false
+    end)
+end
+
 lib.callback.register('randol_grandma:server:useGrandma', function(source, index)
     local src = source
     local ped = GetPlayerPed(src)
     local coords = GetEntityCoords(ped)
+    local gparent = Server.locations[index]
+    local pos = gparent.coords
 
-    if #(coords - Server.locations[index].xyz) > 10 then
+    if #(coords - vec3(pos.x, pos.y, pos.z)) > 10 then
         return false
     end
 
-    if GlobalState.GRANDMA_BUSY then
-        DoNotification(src, "Grandma is busy right now.", "error")
+    if gparent.busy then
+        DoNotification(src, ("%s is busy right now."):format(gparent.name), "error")
         return false
     end
 
@@ -33,14 +43,15 @@ lib.callback.register('randol_grandma:server:useGrandma', function(source, index
         return false
     end
 
-    GlobalState.GRANDMA_BUSY = true
+    resetBusy(index)
+
     TriggerClientEvent('randol_grandma:client:attemptRevive', src, index)
     return true
 end)
 
-lib.callback.register('randol_grandma:server:resetBusy', function(source)
-    if GlobalState.GRANDMA_BUSY then
-        GlobalState.GRANDMA_BUSY = false
+lib.callback.register('randol_grandma:server:resetBusy', function(source, index)
+    if not index then return false end
+    if Server.locations[index].busy then
         TriggerEvent('randol_grandma:server:handleRevive', source)
         return true
     end
@@ -48,8 +59,8 @@ lib.callback.register('randol_grandma:server:resetBusy', function(source)
 end)
 
 lib.callback.register('randol_grandma:server:syncAnim', function(source, index)
-    local coords = Server.locations[index].xyz
-    local plys = lib.getNearbyPlayers(coords, 50.0)
+    local coords = Server.locations[index].coords
+    local plys = lib.getNearbyPlayers(coords.xyz, 50.0)
     if plys then
         for i = 1, #plys do
             local player = plys[i]
@@ -63,7 +74,6 @@ end)
 AddEventHandler('onResourceStart', function(resourceName)
     if GetCurrentResourceName() ~= resourceName then return end
     SetTimeout(2000, function()
-        GlobalState.GRANDMA_BUSY = false
         TriggerClientEvent('randol_grandma:client:cacheConfig', -1, Server)
     end)
 end)

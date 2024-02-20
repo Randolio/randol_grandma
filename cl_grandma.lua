@@ -21,11 +21,10 @@ function deleteGrandma()
 end
 
 local function spawnGrandma()
-    local model = joaat(Config.model)
-    lib.requestModel(model, 5000)
-    
     for k, v in pairs(Config.locations) do
-        GRANDMA_PED[k] = CreatePed(0, model, v.x, v.y, v.z - 1.0, v.w, false, false)
+        local model = joaat(v.model)
+        lib.requestModel(model, 5000)
+        GRANDMA_PED[k] = CreatePed(0, model, v.coords.x, v.coords.y, v.coords.z - 1.0, v.coords.w, false, false)
 
         SetEntityAsMissionEntity(GRANDMA_PED[k], true, true)
         SetPedFleeAttributes(GRANDMA_PED[k], 0, 0)
@@ -47,7 +46,7 @@ local function spawnGrandma()
                         end
                     end,
                     canInteract = function()
-                        return not GlobalState.GRANDMA_BUSY and isPlyDead()
+                        return isPlyDead()
                     end,
                 },
             },
@@ -66,18 +65,19 @@ RegisterNetEvent('randol_grandma:client:attemptRevive', function(k)
     if GetInvokingResource() then return end
     lib.callback.await('randol_grandma:server:syncAnim', false, k)
     local coords = GetOffsetFromEntityInWorldCoords(GRANDMA_PED[k], 0.0, 0.5, 0.0)
+    local name = Config.locations[k].name
     SetEntityCoords(cache.ped, coords.x, coords.y, coords.z-1.0)
     if lib.progressCircle({
         duration = Config.duration,
         position = 'bottom',
-        label = 'Grandma is healing your wounds..',
+        label = ('%s is healing your wounds..'):format(name),
         useWhileDead = true,
         canCancel = false,
         disable = { move = true, car = true, mouse = false, combat = true, },
     }) then
-        local success = lib.callback.await('randol_grandma:server:resetBusy', false)
+        local success = lib.callback.await('randol_grandma:server:resetBusy', false, k)
         if success then
-            DoNotification("You were patched up by Grandma.", "success")
+            DoNotification(("You were patched up by %s."):format(name), "success")
         end
     end
 end)
@@ -94,6 +94,6 @@ end)
 
 AddEventHandler('onResourceStop', function(resourceName)
     if GetCurrentResourceName() == resourceName then
-	deleteGrandma()
+	    deleteGrandma()
     end
 end)
