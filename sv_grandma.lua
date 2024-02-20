@@ -29,7 +29,7 @@ lib.callback.register('randol_grandma:server:useGrandma', function(source, index
 
 
     if not hasPaid then
-        DoNotification(src, ("You don't have enough %s to pay Server. ($%s)"):format(Server.moneyType, Server.cost), "error")
+        DoNotification(src, ("You don't have enough %s to pay the fee. ($%s)"):format(Server.moneyType, Server.cost), "error")
         return false
     end
 
