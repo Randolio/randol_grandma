@@ -9,14 +9,6 @@ Server = {
     duration = 10000,
 }
 
-local function resetBusy(index)
-    Server.locations[index].busy = true
-    CreateThread(function()
-        Wait(Server.duration + 2000) -- This is to account for people who may crash/quit during the progress bar. Gotta make sure that grandparent resets.
-        Server.locations[index].busy = false
-    end)
-end
-
 lib.callback.register('randol_grandma:server:useGrandma', function(source, index)
     local src = source
     local ped = GetPlayerPed(src)
@@ -42,7 +34,20 @@ lib.callback.register('randol_grandma:server:useGrandma', function(source, index
         return false
     end
 
-    resetBusy(index)
+    Server.locations[index].busy = true
+    
+    CreateThread(function()
+        local plys = lib.getNearbyPlayers(pos.xyz, 30.0)
+        if plys then
+            for i = 1, #plys do
+                local player = plys[i]
+                TriggerClientEvent('randol_grandma:client:syncAnim', player.id, index)
+            end
+        end
+
+        Wait(Server.duration + 3000) -- This is to account for people who may crash/quit during the progress bar. Gotta make sure that grandparent resets.
+        Server.locations[index].busy = false
+    end)
 
     TriggerClientEvent('randol_grandma:client:attemptRevive', src, index)
     return true
@@ -52,19 +57,6 @@ lib.callback.register('randol_grandma:server:resetBusy', function(source, index)
     if not index then return false end
     if Server.locations[index].busy then
         TriggerEvent('randol_grandma:server:handleRevive', source)
-        return true
-    end
-    return false
-end)
-
-lib.callback.register('randol_grandma:server:syncAnim', function(source, index)
-    local coords = Server.locations[index].coords
-    local plys = lib.getNearbyPlayers(coords.xyz, 30.0)
-    if plys then
-        for i = 1, #plys do
-            local player = plys[i]
-            TriggerClientEvent('randol_grandma:client:syncAnim', player.id, index)
-        end
         return true
     end
     return false
