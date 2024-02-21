@@ -53,7 +53,7 @@ lib.callback.register('randol_grandma:server:useGrandma', function(source, index
     return true
 end)
 
-lib.callback.register('randol_grandma:server:resetBusy', function(source, index)
+lib.callback.register('randol_grandma:server:revivePlayer', function(source, index)
     if not index then return false end
     if Server.locations[index].busy then
         TriggerEvent('randol_grandma:server:handleRevive', source)

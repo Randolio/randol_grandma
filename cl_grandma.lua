@@ -104,7 +104,7 @@ RegisterNetEvent('randol_grandma:client:attemptRevive', function(k)
         canCancel = false,
         disable = { move = true, car = true, mouse = false, combat = true, },
     }) then
-        local success = lib.callback.await('randol_grandma:server:resetBusy', false, k)
+        local success = lib.callback.await('randol_grandma:server:revivePlayer', false, k)
         if success then
             DoNotification(("You were patched up by %s."):format(name), "success")
         end
@@ -112,7 +112,7 @@ RegisterNetEvent('randol_grandma:client:attemptRevive', function(k)
 end)
 
 RegisterNetEvent('randol_grandma:client:syncAnim', function(k)
-    if GetInvokingResource() then return end
+    if GetInvokingResource() or not k then return end
 
     TaskStartScenarioInPlace(GRANDMA_PED[k], "CODE_HUMAN_MEDIC_TEND_TO_DEAD", 0, true)
 
