@@ -1,4 +1,5 @@
 local GRANDMA_PED = {}
+local storedPoints = {}
 Config = {}
 
 local function resetGrandma(k)
@@ -10,37 +11,44 @@ local function resetGrandma(k)
 end
 
 function deleteGrandma()
-    for k,v in pairs(GRANDMA_PED) do
-        if DoesEntityExist(GRANDMA_PED[k]) then
-            DeleteEntity(GRANDMA_PED[k])
+    for point, _ in pairs(storedPoints) do
+        if storedPoints[point] then
+            storedPoints[point]:remove()
+        end
+    end
+    for ped, _ in pairs(GRANDMA_PED) do
+        if DoesEntityExist(GRANDMA_PED[ped]) then
+            DeleteEntity(GRANDMA_PED[ped])
+            exports['qb-target']:RemoveTargetEntity(GRANDMA_PED[ped], "Get Treated")
         end
     end
     table.wipe(GRANDMA_PED)
-    table.wipe(PlayerData)
+    table.wipe(storedPoints)
     table.wipe(Config)
 end
 
-local function spawnGrandma()
-    for k, v in pairs(Config.locations) do
+local function spawnGrandma(data)
+    if not DoesEntityExist(GRANDMA_PED[data.index]) then
+        local v = data.pedData
         local model = joaat(v.model)
         lib.requestModel(model, 5000)
-        GRANDMA_PED[k] = CreatePed(0, model, v.coords.x, v.coords.y, v.coords.z - 1.0, v.coords.w, false, false)
+        GRANDMA_PED[data.index] = CreatePed(0, model, v.coords.x, v.coords.y, v.coords.z - 1.0, v.coords.w, false, false)
 
-        SetEntityAsMissionEntity(GRANDMA_PED[k], true, true)
-        SetPedFleeAttributes(GRANDMA_PED[k], 0, 0)
-        SetBlockingOfNonTemporaryEvents(GRANDMA_PED[k], true)
-        SetEntityInvincible(GRANDMA_PED[k], true)
-        FreezeEntityPosition(GRANDMA_PED[k], true)
+        SetEntityAsMissionEntity(GRANDMA_PED[data.index], true, true)
+        SetPedFleeAttributes(GRANDMA_PED[data.index], 0, 0)
+        SetBlockingOfNonTemporaryEvents(GRANDMA_PED[data.index], true)
+        SetEntityInvincible(GRANDMA_PED[data.index], true)
+        FreezeEntityPosition(GRANDMA_PED[data.index], true)
         lib.requestAnimDict("timetable@reunited@ig_10", 2000)        
-        TaskPlayAnim(GRANDMA_PED[k], "timetable@reunited@ig_10", "base_amanda", 8.0, 1.0, -1, 01, 0, 0, 0, 0)
+        TaskPlayAnim(GRANDMA_PED[data.index], "timetable@reunited@ig_10", "base_amanda", 8.0, 1.0, -1, 01, 0, 0, 0, 0)
 
-        exports['qb-target']:AddTargetEntity(GRANDMA_PED[k], { -- Use qb-target because ox-target has compatability for it.(Works for ESX too if you use ox-target)
+        exports['qb-target']:AddTargetEntity(GRANDMA_PED[data.index], { -- Use qb-target because ox-target has compatability for it.(Works for ESX too if you use ox-target)
             options = {
                 { 
                     icon = "fa-solid fa-house-medical",
                     label = "Get Treated",
                     action = function()
-                        local success = lib.callback.await('randol_grandma:server:useGrandma', false, k)
+                        local success = lib.callback.await('randol_grandma:server:useGrandma', false, data.index)
                         if success then
                             DoNotification("You are being helped.", "success")
                         end
@@ -55,10 +63,31 @@ local function spawnGrandma()
     end
 end
 
+local function yeetGrandma(data)
+    if DoesEntityExist(GRANDMA_PED[data.index]) then
+        DeleteEntity(GRANDMA_PED[data.index])
+        exports['qb-target']:RemoveTargetEntity(GRANDMA_PED[data.index], "Get Treated")
+        GRANDMA_PED[data.index] = nil
+    end
+end
+
+local function createGrandmaPoints()
+    for id, data in pairs(Config.locations) do
+		storedPoints[id] = lib.points.new({
+			coords = data.coords,
+			distance = 30,
+			index = id,
+            pedData = data,
+            onEnter = spawnGrandma,
+			onExit = yeetGrandma,
+		})
+	end
+end
+
 RegisterNetEvent('randol_grandma:client:cacheConfig', function(data)
     if GetInvokingResource() or not hasPlyLoaded() then return end
     Config = data
-    spawnGrandma()
+    createGrandmaPoints()
 end)
 
 RegisterNetEvent('randol_grandma:client:attemptRevive', function(k)

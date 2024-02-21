@@ -5,7 +5,7 @@ Server = {
         [2] = {coords = vec4(1974.38, 3820.33, 33.43, 215.01), model = 'cs_nigel', name = 'Grandpa', busy = false},
     },
     cost = 500,
-    moneyType = 'bank', -- cash/bank ('cash' will convert to 'money' for ESX, so keep it as 'cash' if you wanna use cash and let the bridge handle it)
+    moneyType = 'bank', -- cash/bank
     duration = 10000,
 }
 
@@ -59,7 +59,7 @@ end)
 
 lib.callback.register('randol_grandma:server:syncAnim', function(source, index)
     local coords = Server.locations[index].coords
-    local plys = lib.getNearbyPlayers(coords.xyz, 50.0)
+    local plys = lib.getNearbyPlayers(coords.xyz, 30.0)
     if plys then
         for i = 1, #plys do
             local player = plys[i]
