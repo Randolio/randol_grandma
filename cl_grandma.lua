@@ -91,8 +91,7 @@ RegisterNetEvent('randol_grandma:client:cacheConfig', function(data)
 end)
 
 RegisterNetEvent('randol_grandma:client:attemptRevive', function(k)
-    if GetInvokingResource() then return end
-    lib.callback.await('randol_grandma:server:syncAnim', false, k)
+    if GetInvokingResource() or not k then return end
     local coords = GetOffsetFromEntityInWorldCoords(GRANDMA_PED[k], 0.0, 0.5, 0.0)
     local name = Config.locations[k].name
     SetEntityCoords(cache.ped, coords.x, coords.y, coords.z-1.0)
