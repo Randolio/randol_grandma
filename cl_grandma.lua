@@ -73,15 +73,15 @@ end
 
 local function createGrandmaPoints()
     for id, data in pairs(Config.locations) do
-		storedPoints[id] = lib.points.new({
-			coords = data.coords,
-			distance = 30,
-			index = id,
-            pedData = data,
-            onEnter = spawnGrandma,
-			onExit = yeetGrandma,
-		})
-	end
+        storedPoints[id] = lib.points.new({
+        coords = data.coords,
+        distance = 30,
+        index = id,
+        pedData = data,
+        onEnter = spawnGrandma,
+        onExit = yeetGrandma,
+        })
+    end
 end
 
 RegisterNetEvent('randol_grandma:client:cacheConfig', function(data)
@@ -123,6 +123,6 @@ end)
 
 AddEventHandler('onResourceStop', function(resourceName)
     if GetCurrentResourceName() == resourceName then
-	    deleteGrandma()
+        deleteGrandma()
     end
 end)
