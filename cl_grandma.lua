@@ -11,9 +11,9 @@ local function resetGrandma(k)
 end
 
 function deleteGrandma()
-    for point, _ in pairs(storedPoints) do
-        if storedPoints[point] then
-            storedPoints[point]:remove()
+    for i = 1, #storedPoints do
+        if storedPoints[i] then
+            storedPoints[i]:remove()
         end
     end
     for ped, _ in pairs(GRANDMA_PED) do
@@ -73,7 +73,7 @@ end
 
 local function createGrandmaPoints()
     for id, data in pairs(Config.locations) do
-        storedPoints[id] = lib.points.new({
+        local zone = lib.points.new({
         coords = data.coords,
         distance = 30,
         index = id,
@@ -81,6 +81,7 @@ local function createGrandmaPoints()
         onEnter = spawnGrandma,
         onExit = yeetGrandma,
         })
+        storedPoints[#storedPoints+1] = zone
     end
 end
 
