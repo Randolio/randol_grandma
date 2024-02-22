@@ -2,9 +2,9 @@ if not lib.checkDependency('ND_Core', '2.0.0', true) then return end
 
 NDCore = {}
 
-PlayerData = {}
-
 lib.load('@ND_Core.init')
+
+local PlayerData = {}
 
 RegisterNetEvent('ND:characterUnloaded', function()
     LocalPlayer.state.isLoggedIn = false
