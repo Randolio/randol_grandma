@@ -1,4 +1,4 @@
-if not lib.checkDependency('ND_Core', '2.0.0', true) then return end
+if not lib.checkDependency('ND_Core', '2.0.0') then return end
 
 NDCore = {}
 
