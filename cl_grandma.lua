@@ -5,8 +5,9 @@ Config = {}
 local function resetGrandma(k)
     if DoesEntityExist(GRANDMA_PED[k]) then
         ClearPedTasksImmediately(GRANDMA_PED[k])
-        lib.requestAnimDict("timetable@reunited@ig_10", 2000)        
+        lib.requestAnimDict("timetable@reunited@ig_10")        
         TaskPlayAnim(GRANDMA_PED[k], "timetable@reunited@ig_10", "base_amanda", 8.0, 1.0, -1, 01, 0, 0, 0, 0)
+        RemoveAnimDict("timetable@reunited@ig_10")
     end
 end
 
@@ -31,7 +32,7 @@ local function spawnGrandma(data)
     if not DoesEntityExist(GRANDMA_PED[data.index]) then
         local v = data.pedData
         local model = joaat(v.model)
-        lib.requestModel(model, 5000)
+        lib.requestModel(model)
         GRANDMA_PED[data.index] = CreatePed(0, model, v.coords.x, v.coords.y, v.coords.z - 1.0, v.coords.w, false, false)
 
         SetEntityAsMissionEntity(GRANDMA_PED[data.index], true, true)
@@ -39,9 +40,12 @@ local function spawnGrandma(data)
         SetBlockingOfNonTemporaryEvents(GRANDMA_PED[data.index], true)
         SetEntityInvincible(GRANDMA_PED[data.index], true)
         FreezeEntityPosition(GRANDMA_PED[data.index], true)
-        lib.requestAnimDict("timetable@reunited@ig_10", 2000)        
-        TaskPlayAnim(GRANDMA_PED[data.index], "timetable@reunited@ig_10", "base_amanda", 8.0, 1.0, -1, 01, 0, 0, 0, 0)
+        SetModelAsNoLongerNeeded(model)
 
+        lib.requestAnimDict("timetable@reunited@ig_10")        
+        TaskPlayAnim(GRANDMA_PED[data.index], "timetable@reunited@ig_10", "base_amanda", 8.0, 1.0, -1, 01, 0, 0, 0, 0)
+        RemoveAnimDict("timetable@reunited@ig_10")
+        
         exports['qb-target']:AddTargetEntity(GRANDMA_PED[data.index], { -- Use qb-target because ox-target has compatability for it.(Works for ESX too if you use ox-target)
             options = {
                 { 
@@ -65,8 +69,8 @@ end
 
 local function yeetGrandma(data)
     if DoesEntityExist(GRANDMA_PED[data.index]) then
-        DeleteEntity(GRANDMA_PED[data.index])
         exports['qb-target']:RemoveTargetEntity(GRANDMA_PED[data.index], "Get Treated")
+        DeleteEntity(GRANDMA_PED[data.index])
         GRANDMA_PED[data.index] = nil
     end
 end
