@@ -9,3 +9,5 @@ A way for players to get revived in your server without the need of a hospital (
 ## Requirements
 
 * [ox_lib](https://github.com/overextended/ox_lib/releases/tag/v3.16.2)
+
+**You have permission to use this in your server and edit for your personal needs but are not allowed to redistribute.**
