@@ -25,10 +25,10 @@ function RemovePlayerMoney(xPlayer, amount, moneyType)
     return false
 end
 
+function handleRevive(src)
+    TriggerClientEvent('esx_ambulancejob:revive', src)
+end
+
 AddEventHandler('esx:playerLoaded', function(source)
     PlayerHasLoaded(source)
-end)
-
-AddEventHandler('randol_grandma:server:handleRevive', function(src)
-    TriggerClientEvent('esx_ambulancejob:revive', src)
 end)

@@ -25,12 +25,12 @@ function RemovePlayerMoney(Player, amount, moneyType)
     return false
 end
 
-AddEventHandler("ND:characterLoaded", function(character)
-    PlayerHasLoaded(character.source)
-end)
-
-AddEventHandler('randol_grandma:server:handleRevive', function(src)
+function handleRevive(src)
     local Player = NDCore.getPlayer(src)
     if not Player then return end
     Player.revive()
+end
+
+AddEventHandler("ND:characterLoaded", function(character)
+    PlayerHasLoaded(character.source)
 end)

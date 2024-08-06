@@ -1,13 +1,14 @@
 local GRANDMA_PED = {}
 local storedPoints = {}
+local oxtarget = GetResourceState('ox_target') == 'started'
 Config = {}
 
 local function resetGrandma(k)
     if DoesEntityExist(GRANDMA_PED[k]) then
         ClearPedTasksImmediately(GRANDMA_PED[k])
-        lib.requestAnimDict("timetable@reunited@ig_10")        
-        TaskPlayAnim(GRANDMA_PED[k], "timetable@reunited@ig_10", "base_amanda", 8.0, 1.0, -1, 01, 0, 0, 0, 0)
-        RemoveAnimDict("timetable@reunited@ig_10")
+        lib.requestAnimDict('timetable@reunited@ig_10')        
+        TaskPlayAnim(GRANDMA_PED[k], 'timetable@reunited@ig_10', 'base_amanda', 8.0, 1.0, -1, 01, 0, 0, 0, 0)
+        RemoveAnimDict('timetable@reunited@ig_10')
     end
 end
 
@@ -19,8 +20,12 @@ function deleteGrandma()
     end
     for ped, _ in pairs(GRANDMA_PED) do
         if DoesEntityExist(GRANDMA_PED[ped]) then
+            if oxtarget then
+                exports.ox_target:removeLocalEntity(GRANDMA_PED[ped], 'Get Treated')
+            else
+                exports['qb-target']:RemoveTargetEntity(GRANDMA_PED[ped], 'Get Treated')
+            end
             DeleteEntity(GRANDMA_PED[ped])
-            exports['qb-target']:RemoveTargetEntity(GRANDMA_PED[ped], "Get Treated")
         end
     end
     table.wipe(GRANDMA_PED)
@@ -32,7 +37,7 @@ local function spawnGrandma(data)
     if not DoesEntityExist(GRANDMA_PED[data.index]) then
         local v = data.pedData
         local model = joaat(v.model)
-        lib.requestModel(model)
+        lib.requestModel(model, 5000)
         GRANDMA_PED[data.index] = CreatePed(0, model, v.coords.x, v.coords.y, v.coords.z - 1.0, v.coords.w, false, false)
 
         SetEntityAsMissionEntity(GRANDMA_PED[data.index], true, true)
@@ -42,34 +47,53 @@ local function spawnGrandma(data)
         FreezeEntityPosition(GRANDMA_PED[data.index], true)
         SetModelAsNoLongerNeeded(model)
 
-        lib.requestAnimDict("timetable@reunited@ig_10")        
-        TaskPlayAnim(GRANDMA_PED[data.index], "timetable@reunited@ig_10", "base_amanda", 8.0, 1.0, -1, 01, 0, 0, 0, 0)
-        RemoveAnimDict("timetable@reunited@ig_10")
+        lib.requestAnimDict('timetable@reunited@ig_10', 5000)        
+        TaskPlayAnim(GRANDMA_PED[data.index], 'timetable@reunited@ig_10', 'base_amanda', 8.0, 1.0, -1, 01, 0, 0, 0, 0)
+        RemoveAnimDict('timetable@reunited@ig_10')
         
-        exports['qb-target']:AddTargetEntity(GRANDMA_PED[data.index], { -- Use qb-target because ox-target has compatability for it.(Works for ESX too if you use ox-target)
-            options = {
-                { 
-                    icon = "fa-solid fa-house-medical",
-                    label = "Get Treated",
-                    action = function()
+        if oxtarget then
+            exports.ox_target:addLocalEntity(GRANDMA_PED[data.index], {
+                {
+                    icon = 'fa-solid fa-house-medical',
+                    label = 'Get Treated',
+                    onSelect = function()
                         local success = lib.callback.await('randol_grandma:server:useGrandma', false, data.index)
                         if success then
-                            DoNotification("You are being helped.", "success")
+                            DoNotification('You are being helped.', 'success')
                         end
                     end,
-                    canInteract = function()
-                        return isPlyDead()
-                    end,
+                    canInteract = function() return isPlyDead() end,
+                    distance = 2.5
+                }
+            })
+        else
+            exports['qb-target']:AddTargetEntity(GRANDMA_PED[data.index], {
+                options = {
+                    { 
+                        icon = 'fa-solid fa-house-medical',
+                        label = 'Get Treated',
+                        action = function()
+                            local success = lib.callback.await('randol_grandma:server:useGrandma', false, data.index)
+                            if success then
+                                DoNotification('You are being helped.', 'success')
+                            end
+                        end,
+                        canInteract = function() return isPlyDead() end,
+                    },
                 },
-            },
-            distance = 2.5 
-        })
+                distance = 2.5 
+            })
+        end
     end
 end
 
 local function yeetGrandma(data)
     if DoesEntityExist(GRANDMA_PED[data.index]) then
-        exports['qb-target']:RemoveTargetEntity(GRANDMA_PED[data.index], "Get Treated")
+        if oxtarget then
+            exports.ox_target:removeLocalEntity(GRANDMA_PED[data.index], 'Get Treated')
+        else
+            exports['qb-target']:RemoveTargetEntity(GRANDMA_PED[data.index], 'Get Treated')
+        end
         DeleteEntity(GRANDMA_PED[data.index])
         GRANDMA_PED[data.index] = nil
     end
@@ -78,12 +102,12 @@ end
 local function createGrandmaPoints()
     for id, data in pairs(Config.locations) do
         local zone = lib.points.new({
-        coords = data.coords,
-        distance = 30,
-        index = id,
-        pedData = data,
-        onEnter = spawnGrandma,
-        onExit = yeetGrandma,
+            coords = data.coords,
+            distance = 30,
+            index = id,
+            pedData = data,
+            onEnter = spawnGrandma,
+            onExit = yeetGrandma,
         })
         storedPoints[#storedPoints+1] = zone
     end
@@ -110,7 +134,7 @@ RegisterNetEvent('randol_grandma:client:attemptRevive', function(k)
     }) then
         local success = lib.callback.await('randol_grandma:server:revivePlayer', false, k)
         if success then
-            DoNotification(("You were patched up by %s."):format(name), "success")
+            DoNotification(('You were patched up by %s.'):format(name), 'success')
         end
     end
 end)
@@ -118,7 +142,7 @@ end)
 RegisterNetEvent('randol_grandma:client:syncAnim', function(k)
     if GetInvokingResource() or not k then return end
 
-    TaskStartScenarioInPlace(GRANDMA_PED[k], "CODE_HUMAN_MEDIC_TEND_TO_DEAD", 0, true)
+    TaskStartScenarioInPlace(GRANDMA_PED[k], 'CODE_HUMAN_MEDIC_TEND_TO_DEAD', 0, true)
 
     SetTimeout(Config.duration, function()
         resetGrandma(k)

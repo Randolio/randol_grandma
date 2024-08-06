@@ -23,14 +23,14 @@ function RemovePlayerMoney(Player, amount, moneyType)
     return false
 end
 
-RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
-    PlayerHasLoaded(source)
-end)
-
-AddEventHandler('randol_grandma:server:handleRevive', function(src)
+function handleRevive(src)
     if GetResourceState('qbx_medical') == 'started' then -- A quick way to check if it's qbox or qb.
         TriggerClientEvent('qbx_medical:client:playerRevived', src)
     else
         TriggerClientEvent('hospital:client:Revive', src)
     end
+end
+
+RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
+    PlayerHasLoaded(source)
 end)
