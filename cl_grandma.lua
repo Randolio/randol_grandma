@@ -1,6 +1,5 @@
 local GRANDMA_PED = {}
 local storedPoints = {}
-local oxtarget = GetResourceState('ox_target') == 'started'
 Config = {}
 
 local function resetGrandma(k)
@@ -20,7 +19,7 @@ function deleteGrandma()
     end
     for ped, _ in pairs(GRANDMA_PED) do
         if DoesEntityExist(GRANDMA_PED[ped]) then
-            if oxtarget then
+            if GetResourceState('ox_target') == 'started' then
                 exports.ox_target:removeLocalEntity(GRANDMA_PED[ped], 'Get Treated')
             else
                 exports['qb-target']:RemoveTargetEntity(GRANDMA_PED[ped], 'Get Treated')
@@ -51,7 +50,7 @@ local function spawnGrandma(data)
         TaskPlayAnim(GRANDMA_PED[data.index], 'timetable@reunited@ig_10', 'base_amanda', 8.0, 1.0, -1, 01, 0, 0, 0, 0)
         RemoveAnimDict('timetable@reunited@ig_10')
         
-        if oxtarget then
+        if GetResourceState('ox_target') == 'started' then
             exports.ox_target:addLocalEntity(GRANDMA_PED[data.index], {
                 {
                     icon = 'fa-solid fa-house-medical',
@@ -89,7 +88,7 @@ end
 
 local function yeetGrandma(data)
     if DoesEntityExist(GRANDMA_PED[data.index]) then
-        if oxtarget then
+        if GetResourceState('ox_target') == 'started' then
             exports.ox_target:removeLocalEntity(GRANDMA_PED[data.index], 'Get Treated')
         else
             exports['qb-target']:RemoveTargetEntity(GRANDMA_PED[data.index], 'Get Treated')
